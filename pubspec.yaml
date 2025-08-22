@@ -106,6 +106,7 @@ flutter:
     - assets/images/prayer_icon.png
     - assets/images/calendar_icon.jpg
     - assets/images/logo_splash.png
+    - assets/images/oferta_bg.jpg
 
 flutter_native_splash:
   color: "#FFD700"
