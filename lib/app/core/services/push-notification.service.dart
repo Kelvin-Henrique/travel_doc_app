@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:iva_app/app/core/helpers/shared-preferences.dart';
+import 'package:travel_doc_app/app/core/helpers/shared-preferences.dart';
 
 class PushNotificationsService {
   PushNotificationsService._();

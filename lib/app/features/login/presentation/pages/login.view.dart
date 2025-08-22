@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:iva_app/app/features/login/presentation/pages/cadastro.view.dart';
+import 'package:travel_doc_app/app/features/login/presentation/pages/cadastro.view.dart';
 import 'package:provider/provider.dart';
 
 // Certifique-se de que o caminho para o seu ThemeProvider está correto.
 // Se o arquivo estiver em lib/app/core/providers/theme_provider.dart,
 // o import abaixo deve funcionar.
-import 'package:iva_app/app/core/providers/theme_provider.dart';
+import 'package:travel_doc_app/app/core/providers/theme_provider.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

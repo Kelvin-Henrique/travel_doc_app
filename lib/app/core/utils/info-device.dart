@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:iva_app/app/core/errors/failures.dart';
-import 'package:iva_app/app/core/utils/info-device.entity.dart';
+import 'package:travel_doc_app/app/core/errors/failures.dart';
+import 'package:travel_doc_app/app/core/utils/info-device.entity.dart';
 
 class InfoDeviceUtils {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();

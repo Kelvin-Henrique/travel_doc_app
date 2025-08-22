@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:get_it/get_it.dart';
-import 'package:iva_app/app/core/locator/locator.dart';
-import 'package:iva_app/app/core/logs/log.dart';
-import 'package:iva_app/app/features/loader/usecases/loader.controller.dart';
+import 'package:travel_doc_app/app/core/locator/locator.dart';
+import 'package:travel_doc_app/app/core/logs/log.dart';
+import 'package:travel_doc_app/app/features/loader/usecases/loader.controller.dart';
 
 class CustomInterceptor extends Interceptor {
   LoaderController controller = GetIt.I.get<LoaderController>();

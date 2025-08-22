@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iva_app/app/core/models/basic.model.dart';
+import 'package:travel_doc_app/app/core/models/basic.model.dart';
 
 class DropdownWidget extends StatefulWidget {
   final Function(BasicModel)? onChanged;

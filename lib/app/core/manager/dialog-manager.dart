@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iva_app/app/core/locator/locator.dart';
-import 'package:iva_app/app/core/models/dialog-request.dart';
-import 'package:iva_app/app/core/models/dialog-response.dart';
-import 'package:iva_app/app/core/services/dialog.service.dart';
-import 'package:iva_app/app/core/widgets/dialog/dialog.widget.dart';
+import 'package:travel_doc_app/app/core/locator/locator.dart';
+import 'package:travel_doc_app/app/core/models/dialog-request.dart';
+import 'package:travel_doc_app/app/core/models/dialog-response.dart';
+import 'package:travel_doc_app/app/core/services/dialog.service.dart';
+import 'package:travel_doc_app/app/core/widgets/dialog/dialog.widget.dart';
 
 class DialogManager extends StatefulWidget {
   final Widget child;

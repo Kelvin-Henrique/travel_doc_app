@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:iva_app/app/core/providers/theme_provider.dart';
-import 'package:iva_app/app/features/home/page/home.page.dart';
-import 'package:iva_app/app/features/login/presentation/pages/login.view.dart';
+import 'package:travel_doc_app/app/core/providers/theme_provider.dart';
+import 'package:travel_doc_app/app/features/home/page/home.page.dart';
+import 'package:travel_doc_app/app/features/login/presentation/pages/login.view.dart';
 
 // O widget de animação para os botões. Nenhuma alteração necessária aqui.
 class SlideInButton extends StatefulWidget {

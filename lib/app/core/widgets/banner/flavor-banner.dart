@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iva_app/themes/flavors.dart';
+import 'package:travel_doc_app/themes/flavors.dart';
 
 class FlavorBanner extends StatelessWidget {
   final Widget child;

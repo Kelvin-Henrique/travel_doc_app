@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:iva_app/app/features/loader/usecases/loader.controller.dart';
+import 'package:travel_doc_app/app/features/loader/usecases/loader.controller.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class Loader extends StatefulWidget {

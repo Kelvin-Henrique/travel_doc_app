@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iva_app/app/core/themes/app_theme.dart';
+import 'package:travel_doc_app/app/core/themes/app_theme.dart';
 
 class ThemeProvider with ChangeNotifier {
   bool _isDarkMode = false;

@@ -1,5 +1,5 @@
-import 'package:iva_app/app/core/locator/locator.dart';
-import 'package:iva_app/app/core/models/dial-error.model.dart';
+import 'package:travel_doc_app/app/core/locator/locator.dart';
+import 'package:travel_doc_app/app/core/models/dial-error.model.dart';
 
 import 'dialog.service.dart';
 

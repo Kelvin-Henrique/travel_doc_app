@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:iva_app/app/core/models/dialog-request.dart';
-import 'package:iva_app/app/core/models/dialog-response.dart';
+import 'package:travel_doc_app/app/core/models/dialog-request.dart';
+import 'package:travel_doc_app/app/core/models/dialog-response.dart';
 
 class DialogService {
   final GlobalKey<NavigatorState> _dialogNavigationKey =

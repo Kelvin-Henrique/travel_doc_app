@@ -1,8 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:iva_app/app/features/home/page/agenda.page.dart';
-import 'package:iva_app/app/features/home/page/home.page.dart';
-import 'package:iva_app/app/features/home/page/oracao.page.dart';
-import 'package:iva_app/app/features/home/page/sobre-nos.page.dart';
+import 'package:travel_doc_app/app/features/home/page/agenda.page.dart';
+import 'package:travel_doc_app/app/features/home/page/home.page.dart';
+import 'package:travel_doc_app/app/features/home/page/oracao.page.dart';
+import 'package:travel_doc_app/app/features/home/page/sobre-nos.page.dart';
 
 class HomeModule extends Module {
   @override

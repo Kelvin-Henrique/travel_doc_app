@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
-import 'package:iva_app/app/core/locator/locator.dart';
-import 'package:iva_app/app/core/manager/dialog-manager.dart';
-import 'package:iva_app/app/core/providers/theme_provider.dart';
-import 'package:iva_app/app/core/services/dialog.service.dart';
+import 'package:travel_doc_app/app/core/locator/locator.dart';
+import 'package:travel_doc_app/app/core/manager/dialog-manager.dart';
+import 'package:travel_doc_app/app/core/providers/theme_provider.dart';
+import 'package:travel_doc_app/app/core/services/dialog.service.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});

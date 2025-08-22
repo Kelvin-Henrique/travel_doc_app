@@ -1,6 +1,6 @@
 {
-    "name": "iva_app",
-    "short_name": "iva_app",
+    "name": "travel_doc_app",
+    "short_name": "travel_doc_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:iva_app/app/core/widgets/animate/animate.widget.dart';
-import 'package:iva_app/app/core/widgets/button/button.widget.dart';
+import 'package:travel_doc_app/app/core/widgets/animate/animate.widget.dart';
+import 'package:travel_doc_app/app/core/widgets/button/button.widget.dart';
 
 class AlertWidget extends StatelessWidget {
   final String titulo;

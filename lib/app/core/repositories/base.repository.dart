@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:iva_app/app/core/errors/exceptions.dart';
-import 'package:iva_app/app/core/errors/failures.dart';
-import 'package:iva_app/app/core/platform/network-info/inetwork-info.dart';
-import 'package:iva_app/app/core/repositories/base.failure.dart';
+import 'package:travel_doc_app/app/core/errors/exceptions.dart';
+import 'package:travel_doc_app/app/core/errors/failures.dart';
+import 'package:travel_doc_app/app/core/platform/network-info/inetwork-info.dart';
+import 'package:travel_doc_app/app/core/repositories/base.failure.dart';
 
 class BaseRepository {
   final INetworkInfo networkInfo;

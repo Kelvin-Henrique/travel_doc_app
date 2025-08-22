@@ -1,4 +1,4 @@
-import 'package:iva_app/app/core/errors/failures.dart';
+import 'package:travel_doc_app/app/core/errors/failures.dart';
 
 class BaseFailure extends Failure {
   @override

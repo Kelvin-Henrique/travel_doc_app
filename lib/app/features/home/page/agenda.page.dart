@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:iva_app/app/core/providers/theme_provider.dart';
-import 'package:iva_app/app/core/widgets/painel/painel-default.widget.dart';
+import 'package:travel_doc_app/app/core/providers/theme_provider.dart';
+import 'package:travel_doc_app/app/core/widgets/painel/painel-default.widget.dart';
 
 class AgendaPage extends StatefulWidget {
   const AgendaPage({super.key});
