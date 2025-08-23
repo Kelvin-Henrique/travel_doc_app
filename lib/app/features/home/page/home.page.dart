@@ -13,11 +13,108 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  final GlobalKey _avatarKey = GlobalKey();
+  final ScrollController _viagemScrollController = ScrollController();
+  final ScrollController _historicoScrollController = ScrollController();
+
+  // Estados para expandir/recolher
+  bool _viagensExpanded = true;
+  bool _historicoExpanded = false;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _showProfileMenu(BuildContext context) {
+    final RenderBox renderBox = _avatarKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy + renderBox.size.height + 8,
+        offset.dx + renderBox.size.width,
+        0,
+      ),
+      items: [
+        PopupMenuItem(
+          enabled: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('João Silva', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('joao@email.com', style: TextStyle(color: Colors.black54, fontSize: 13)),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Text('Plano:', style: TextStyle(color: Colors.black54, fontSize: 13)),
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEAF2FB),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Individual',
+                      style: TextStyle(
+                        color: Color(0xFF0A4DA1),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 18),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.settings, size: 20, color: Colors.black54),
+                title: const Text('Perfil', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navegar para página de perfil
+                },
+              ),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.credit_card, size: 20, color: Colors.black54),
+                title: const Text('Planos', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navegar para página de planos
+                },
+              ),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.logout, size: 20, color: Colors.black54),
+                title: const Text('Sair', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Implementar logout
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+      elevation: 8,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viagemScrollController.dispose();
+    _historicoScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,10 +164,14 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {},
                 ),
                 const SizedBox(width: 8),
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.grey[200],
-                  child: Text('JS', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+                GestureDetector(
+                  key: _avatarKey,
+                  onTap: () => _showProfileMenu(context),
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.grey[200],
+                    child: Text('JS', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+                  ),
                 ),
               ],
             ),
@@ -147,88 +248,137 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 18),
 
-              // Título Próximas Viagens
-              Row(
-                children: [
-                  const Text(
-                    'Próximas Viagens',
+              // Próximas Viagens ExpansionTile
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ExpansionTile(
+                  initiallyExpanded: _viagensExpanded,
+                  onExpansionChanged: (expanded) {
+                    setState(() => _viagensExpanded = expanded);
+                  },
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                  title: Row(
+                    children: [
+                      const Text(
+                        'Próximas Viagens',
+                        style: TextStyle(
+                          color: Color(0xFF0A4DA1),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  trailing: Icon(
+                    _viagensExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    color: Color(0xFF0A4DA1),
+                  ),
+                  children: [
+                    // Indicador de rolagem
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
+                        SizedBox(width: 4),
+                        Text(
+                          'Arraste para ver mais',
+                          style: TextStyle(
+                            color: Colors.black38,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 260,
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        controller: _viagemScrollController,
+                        child: ListView(
+                          controller: _viagemScrollController,
+                          scrollDirection: Axis.vertical,
+                          children: [
+                            _buildViagemCard(
+                              local: 'Portugal - Lisboa',
+                              tipo: 'Viagem de negócios',
+                              tags: ['Criada por mim', 'Viagem próxima'],
+                              periodo: '29/08/2025 - 04/09/2025',
+                              participantes: '1 participante(s) (João Silva)',
+                              documentos: '0 documento(s)',
+                              descricao: 'Conferência internacional',
+                            ),
+                            const SizedBox(height: 16),
+                            _buildViagemCard(
+                              local: 'França - Paris',
+                              tipo: 'Lua de mel',
+                              tags: ['Criada por mim'],
+                              periodo: '14/09/2025 - 21/09/2025',
+                              participantes: '2 participante(s) (João Silva, Maria Santos)',
+                              documentos: '1 documento(s)',
+                              descricao: 'Lua de mel em Paris',
+                            ),
+                            // Adicione mais cards conforme necessário
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Histórico de Viagens ExpansionTile
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ExpansionTile(
+                  initiallyExpanded: _historicoExpanded,
+                  onExpansionChanged: (expanded) {
+                    setState(() => _historicoExpanded = expanded);
+                  },
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                  title: const Text(
+                    'Histórico de Viagens',
                     style: TextStyle(
-                      color: Color(0xFF0A4DA1),
+                      color: Colors.black54,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    height: 32,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFF0A4DA1), width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: DropdownButton<String>(
-                      value: 'Todas',
-                      underline: Container(),
-                      icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0A4DA1)),
-                      items: const [
-                        DropdownMenuItem(value: 'Todas', child: Text('Todas')),
-                        DropdownMenuItem(value: 'Minhas', child: Text('Minhas')),
-                      ],
-                      onChanged: (v) {},
-                    ),
+                  trailing: Icon(
+                    _historicoExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    color: Colors.black54,
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Indicador de rolagem
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
-                  SizedBox(width: 4),
-                  Text(
-                    'Arraste para ver mais',
-                    style: TextStyle(
-                      color: Colors.black38,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-
-              // Cards de viagem em coluna com barra de rolagem
-              Container(
-                height: 260,
-                child: Scrollbar(
-                  thumbVisibility: true,
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      _buildViagemCard(
-                        local: 'Portugal - Lisboa',
-                        tipo: 'Viagem de negócios',
-                        tags: ['Criada por mim', 'Viagem próxima'],
-                        periodo: '29/08/2025 - 04/09/2025',
-                        participantes: '1 participante(s) (João Silva)',
-                        documentos: '0 documento(s)',
-                        descricao: 'Conferência internacional',
+                  children: [
+                    Container(
+                      height: 180,
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        controller: _historicoScrollController,
+                        child: ListView(
+                          controller: _historicoScrollController,
+                          children: [
+                            _buildHistoricoCard(
+                              local: 'Brasil - São Paulo',
+                              tipo: 'Reunião de trabalho',
+                              tags: ['Criada por mim', 'Concluída'],
+                              periodo: '28/02/2023 - 04/03/2023',
+                              participantes: '1 participante(s) (João Silva)',
+                              documentos: '2 documento(s)',
+                            ),
+                            // Adicione mais cards conforme necessário
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildViagemCard(
-                        local: 'França - Paris',
-                        tipo: 'Lua de mel',
-                        tags: ['Criada por mim'],
-                        periodo: '14/09/2025 - 21/09/2025',
-                        participantes: '2 participante(s) (João Silva, Maria Santos)',
-                        documentos: '1 documento(s)',
-                        descricao: 'Lua de mel em Paris',
-                      ),
-                      // Adicione mais cards conforme necessário
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -335,8 +485,7 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
-                ),
-              );
+                ));
             }).toList(),
           ),
           const SizedBox(height: 8),
@@ -380,6 +529,99 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.delete_outline, color: Colors.black38, size: 20),
                 onPressed: () {},
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Adicione este método para o card do histórico
+  Widget _buildHistoricoCard({
+    required String local,
+    required String tipo,
+    required List<String> tags,
+    required String periodo,
+    required String participantes,
+    required String documentos,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.black54, size: 18),
+              const SizedBox(width: 4),
+              Text(
+                local,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            tipo,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: tags.map((tag) {
+              final isDone = tag == 'Concluída';
+              return Container(
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isDone ? Colors.grey[300] : Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  tag,
+                  style: TextStyle(
+                    color: isDone ? Colors.black54 : Color(0xFF0A4DA1),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
+                ));
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 16, color: Colors.black54),
+              const SizedBox(width: 4),
+              Text(periodo, style: TextStyle(color: Colors.black87, fontSize: 13)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.people, size: 16, color: Colors.black54),
+              const SizedBox(width: 4),
+              Text(participantes, style: TextStyle(color: Colors.black87, fontSize: 13, decoration: TextDecoration.underline)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.description, size: 16, color: Colors.black54),
+              const SizedBox(width: 4),
+              Text(documentos, style: TextStyle(color: Colors.black87, fontSize: 13, decoration: TextDecoration.underline)),
             ],
           ),
         ],

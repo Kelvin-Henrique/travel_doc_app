@@ -107,17 +107,18 @@ flutter:
     - assets/images/calendar_icon.jpg
     - assets/images/logo_splash.png
     - assets/images/oferta_bg.jpg
+    - assets/images/travel_doc_folder.png
 
 flutter_native_splash:
   color: "#FFD700"
-  image: assets/images/logo.png
+  image: assets/images/travel_doc_folder.png
   android: true
   ios: true
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/travel_doc_folder.png"
   min_sdk_android: 21
   remove_alpha_ios: true
 
