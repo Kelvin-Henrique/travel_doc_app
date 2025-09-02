@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:travel_doc_app/app/features/home/page/travel_bottom_navigation_bar.dart';
+import 'package:travel_doc_app/app/features/home/page/viagens.page.dart'; // adicione este import
 
 // O conteúdo deste arquivo foi atualizado para a HomePage,
 // com um layout claro e barra de navegação flutuante.
@@ -110,6 +111,132 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _abrirModalDocumento(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    final _nomeController = TextEditingController();
+    String? _tipoSelecionado;
+    String _arquivoNome = 'Nenhum arquivo escolhido';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Adicionar Novo Documento',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nomeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nome do documento',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (v) => v == null || v.isEmpty ? 'Campo obrigatório' : null,
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Tipo',
+                          border: OutlineInputBorder(),
+                        ),
+                        value: _tipoSelecionado,
+                        items: [
+                          DropdownMenuItem(value: null, child: Text('Selecione o tipo')),
+                          DropdownMenuItem(value: 'Passaporte', child: Text('Passaporte')),
+                          DropdownMenuItem(value: 'Visto', child: Text('Visto')),
+                          DropdownMenuItem(value: 'Seguro', child: Text('Seguro')),
+                          DropdownMenuItem(value: 'Outro', child: Text('Outro')),
+                        ],
+                        onChanged: (value) {
+                          _tipoSelecionado = value;
+                        },
+                        validator: (v) => v == null ? 'Selecione o tipo' : null,
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF0A4DA1),
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(40, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              // TODO: Implementar seleção de arquivo
+                            },
+                            child: const Text('Escolher arquivo'),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _arquivoNome,
+                              style: const TextStyle(color: Colors.black54, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF0A4DA1),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(160, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              // TODO: Salvar documento
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: const Text('Adicionar Documento'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _viagemScrollController.dispose();
@@ -178,242 +305,265 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Barra de progresso próxima viagem
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[200]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LinearProgressIndicator(
-                      value: 0.7,
-                      minHeight: 7,
-                      backgroundColor: Colors.grey[300],
-                      color: const Color(0xFF0A4DA1),
-                      borderRadius: BorderRadius.circular(4),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          // Página Home
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Barra de progresso próxima viagem
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Faltam 8 dias para sua próxima viagem',
-                      style: TextStyle(
-                        color: Color(0xFF0A4DA1),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-
-              // Campo de busca
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Buscar viagens...',
-                  prefixIcon: Icon(Icons.search, color: Colors.black38),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Color(0xFF0A4DA1), width: 2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Gerencie seus documentos e viagens em um só lugar',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 18),
-
-              // Próximas Viagens ExpansionTile
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ExpansionTile(
-                  initiallyExpanded: _viagensExpanded,
-                  onExpansionChanged: (expanded) {
-                    setState(() => _viagensExpanded = expanded);
-                  },
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                  childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                  title: Row(
-                    children: [
-                      const Text(
-                        'Próximas Viagens',
-                        style: TextStyle(
-                          color: Color(0xFF0A4DA1),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        LinearProgressIndicator(
+                          value: 0.7,
+                          minHeight: 7,
+                          backgroundColor: Colors.grey[300],
+                          color: const Color(0xFF0A4DA1),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                      ),
-                    ],
-                  ),
-                  trailing: Icon(
-                    _viagensExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                    color: Color(0xFF0A4DA1),
-                  ),
-                  children: [
-                    // Indicador de rolagem
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
-                        SizedBox(width: 4),
-                        Text(
-                          'Arraste para ver mais',
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Faltam 8 dias para sua próxima viagem',
                           style: TextStyle(
-                            color: Colors.black38,
-                            fontSize: 13,
+                            color: Color(0xFF0A4DA1),
                             fontWeight: FontWeight.w500,
+                            fontSize: 14,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
-                    Container(
-                      height: 260,
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        controller: _viagemScrollController,
-                        child: ListView(
-                          controller: _viagemScrollController,
-                          scrollDirection: Axis.vertical,
-                          children: [
-                            _buildViagemCard(
-                              local: 'Portugal - Lisboa',
-                              tipo: 'Viagem de negócios',
-                              tags: ['Criada por mim', 'Viagem próxima'],
-                              periodo: '29/08/2025 - 04/09/2025',
-                              participantes: '1 participante(s) (João Silva)',
-                              documentos: '0 documento(s)',
-                              descricao: 'Conferência internacional',
-                            ),
-                            const SizedBox(height: 16),
-                            _buildViagemCard(
-                              local: 'França - Paris',
-                              tipo: 'Lua de mel',
-                              tags: ['Criada por mim'],
-                              periodo: '14/09/2025 - 21/09/2025',
-                              participantes: '2 participante(s) (João Silva, Maria Santos)',
-                              documentos: '1 documento(s)',
-                              descricao: 'Lua de mel em Paris',
-                            ),
-                            // Adicione mais cards conforme necessário
-                          ],
-                        ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Campo de busca
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Buscar viagens...',
+                      prefixIcon: Icon(Icons.search, color: Colors.black38),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Color(0xFF0A4DA1), width: 2),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Histórico de Viagens ExpansionTile
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ExpansionTile(
-                  initiallyExpanded: _historicoExpanded,
-                  onExpansionChanged: (expanded) {
-                    setState(() => _historicoExpanded = expanded);
-                  },
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                  childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                  title: const Text(
-                    'Histórico de Viagens',
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Gerencie seus documentos e viagens em um só lugar',
                     style: TextStyle(
                       color: Colors.black54,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 13,
                     ),
                   ),
-                  trailing: Icon(
-                    _historicoExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                    color: Colors.black54,
-                  ),
-                  children: [
-                    Container(
-                      height: 180,
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        controller: _historicoScrollController,
-                        child: ListView(
-                          controller: _historicoScrollController,
-                          children: [
-                            _buildHistoricoCard(
-                              local: 'Brasil - São Paulo',
-                              tipo: 'Reunião de trabalho',
-                              tags: ['Criada por mim', 'Concluída'],
-                              periodo: '28/02/2023 - 04/03/2023',
-                              participantes: '1 participante(s) (João Silva)',
-                              documentos: '2 documento(s)',
+                  const SizedBox(height: 18),
+
+                  // Próximas Viagens ExpansionTile
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ExpansionTile(
+                      initiallyExpanded: _viagensExpanded,
+                      onExpansionChanged: (expanded) {
+                        setState(() => _viagensExpanded = expanded);
+                      },
+                      tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                      childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                      title: Row(
+                        children: [
+                          const Text(
+                            'Próximas Viagens',
+                            style: TextStyle(
+                              color: Color(0xFF0A4DA1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
                             ),
-                            // Adicione mais cards conforme necessário
+                          ),
+                        ],
+                      ),
+                      trailing: Icon(
+                        _viagensExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        color: Color(0xFF0A4DA1),
+                      ),
+                      children: [
+                        // Indicador de rolagem
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
+                            SizedBox(width: 4),
+                            Text(
+                              'Arraste para ver mais',
+                              style: TextStyle(
+                                color: Colors.black38,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Container(
+                          height: 260,
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            controller: _viagemScrollController,
+                            child: ListView(
+                              controller: _viagemScrollController,
+                              scrollDirection: Axis.vertical,
+                              children: [
+                                _buildViagemCard(
+                                  local: 'Portugal - Lisboa',
+                                  tipo: 'Viagem de negócios',
+                                  tags: ['Criada por mim', 'Viagem próxima'],
+                                  periodo: '29/08/2025 - 04/09/2025',
+                                  participantes: '1 participante(s) (João Silva)',
+                                  documentos: '0 documento(s)',
+                                  descricao: 'Conferência internacional',
+                                ),
+                                const SizedBox(height: 16),
+                                _buildViagemCard(
+                                  local: 'França - Paris',
+                                  tipo: 'Lua de mel',
+                                  tags: ['Criada por mim'],
+                                  periodo: '14/09/2025 - 21/09/2025',
+                                  participantes: '2 participante(s) (João Silva, Maria Santos)',
+                                  documentos: '1 documento(s)',
+                                  descricao: 'Lua de mel em Paris',
+                                ),
+                                // Adicione mais cards conforme necessário
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 24),
 
-              // Ofertas de parceiros
-              const Text(
-                'Ofertas de Parceiros',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
+                  // Histórico de Viagens ExpansionTile
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ExpansionTile(
+                      initiallyExpanded: _historicoExpanded,
+                      onExpansionChanged: (expanded) {
+                        setState(() => _historicoExpanded = expanded);
+                      },
+                      tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                      childrenPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                      title: const Text(
+                        'Histórico de Viagens',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      trailing: Icon(
+                        _historicoExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        color: Colors.black54,
+                      ),
+                      children: [
+                        Container(
+                          height: 180,
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            controller: _historicoScrollController,
+                            child: ListView(
+                              controller: _historicoScrollController,
+                              children: [
+                                _buildHistoricoCard(
+                                  local: 'Brasil - São Paulo',
+                                  tipo: 'Reunião de trabalho',
+                                  tags: ['Criada por mim', 'Concluída'],
+                                  periodo: '28/02/2023 - 04/03/2023',
+                                  participantes: '1 participante(s) (João Silva)',
+                                  documentos: '2 documento(s)',
+                                ),
+                                // Adicione mais cards conforme necessário
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Ofertas de parceiros
+                  const Text(
+                    'Ofertas de Parceiros',
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildOfertaCard(
+                    titulo: 'Alerta Amarelo',
+                    subtitulo: 'Ofertas arrasadoras para aproveitar agora',
+                    parceiro: 'Paradise Travel',
+                    preco: 'A partir de R\$ 299',
+                    cor: Colors.amber,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOfertaCard(
+                    titulo: 'Hora de Viajar',
+                    subtitulo: 'Prepare-se para sua próxima aventura',
+                    parceiro: 'Adventure Tours',
+                    preco: 'A partir de R\$ 299',
+                    cor: Colors.lightBlue,
+                  ),
+                  const SizedBox(height: 32),
+                ],
               ),
-              const SizedBox(height: 8),
-              _buildOfertaCard(
-                titulo: 'Alerta Amarelo',
-                subtitulo: 'Ofertas arrasadoras para aproveitar agora',
-                parceiro: 'Paradise Travel',
-                preco: 'A partir de R\$ 299',
-                cor: Colors.amber,
-              ),
-              const SizedBox(height: 12),
-              _buildOfertaCard(
-                titulo: 'Hora de Viajar',
-                subtitulo: 'Prepare-se para sua próxima aventura',
-                parceiro: 'Adventure Tours',
-                preco: 'A partir de R\$ 299',
-                cor: Colors.lightBlue,
-              ),
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
-        ),
+          // Página Viagens
+          const ViagensPage(), // use a nova classe importada
+          // Item do meio (Camera) - pode ser vazio ou uma tela de câmera
+          Container(),
+          // Documentos (pode ser implementado depois)
+          Container(),
+          // Pessoas (pode ser implementado depois)
+          Container(),
+        ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: TravelBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          if (index == 2) {
+            _abrirModalDocumento(context);
+          } else {
+            _onItemTapped(index);
+          }
+        },
+      ),
     );
   }
 
@@ -732,43 +882,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Viagens',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.camera_alt),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.description),
-          label: 'Documentos',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.people),
-          label: 'Pessoas',
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped,
-      backgroundColor: Colors.white,
-      selectedItemColor: const Color(0xFF0A4DA1),
-      unselectedItemColor: Colors.black38,
-      showUnselectedLabels: true,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
     );
   }
 }
