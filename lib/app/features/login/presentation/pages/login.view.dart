@@ -47,27 +47,12 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo azul com ícone pasta/avião/carro
-              Container(
-                width: 110,
-                height: 90,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0A4DA1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.flight, color: Colors.white, size: 32),
-                      const SizedBox(width: 12),
-                      Icon(Icons.directions_car, color: Colors.white, size: 32),
-                    ],
-                  ),
-                ),
+              Image.asset(
+                'assets/images/travel_doc_logo.png',
+                width: 200,
+                height: 160,
+                fit: BoxFit.contain,
               ),
-              const SizedBox(height: 8),
               const Text(
                 'TravelDoc',
                 style: TextStyle(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:travel_doc_app/app/features/home/page/travel_bottom_navigation_bar.dart';
-import 'package:travel_doc_app/app/features/home/page/viagens.page.dart'; // adicione este import
+import 'package:travel_doc_app/app/features/home/page/viagens.page.dart';
+import 'package:travel_doc_app/app/features/home/page/documentos.page.dart'; // adicione este import
+import 'package:travel_doc_app/app/features/home/page/pessoas.page.dart'; // adicione este import
 
 // O conteúdo deste arquivo foi atualizado para a HomePage,
 // com um layout claro e barra de navegação flutuante.
@@ -258,25 +260,12 @@ class _HomePageState extends State<HomePage> {
           child: SafeArea(
             child: Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0A4DA1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.flight, color: Colors.white, size: 22),
-                        const SizedBox(width: 4),
-                        Icon(Icons.directions_car, color: Colors.white, size: 22),
-                      ],
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/travel_doc_logo.png',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(width: 12),
                 const Text(
                   'TravelDoc',
                   style: TextStyle(
@@ -545,13 +534,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // Página Viagens
-          const ViagensPage(), // use a nova classe importada
+          const ViagensPage(),
           // Item do meio (Camera) - pode ser vazio ou uma tela de câmera
           Container(),
           // Documentos (pode ser implementado depois)
-          Container(),
+          const DocumentosPage(),
           // Pessoas (pode ser implementado depois)
-          Container(),
+          const PessoasPage(),
         ],
       ),
       bottomNavigationBar: TravelBottomNavigationBar(

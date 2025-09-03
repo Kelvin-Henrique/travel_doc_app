@@ -93,32 +93,20 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
-    - assets/images/carrosel_1.png
-    - assets/images/carrosel_2.png
-    - assets/images/clock_icon.png
-    - assets/images/generosidade_icon.png
-    - assets/images/img_home.jpg
-    - assets/images/img_home2.jpg
-    - assets/images/iva_povo.jpg
-    - assets/images/logo.png
-    - assets/images/logoIva.png
-    - assets/images/prayer_icon.png
-    - assets/images/calendar_icon.jpg
-    - assets/images/logo_splash.png
+    - assets/images/travel_doc_logo.png
     - assets/images/oferta_bg.jpg
-    - assets/images/travel_doc_folder.png
 
 flutter_native_splash:
   color: "#FFD700"
-  image: assets/images/travel_doc_folder.png
+  image: assets/images/travel_doc_logo.png
   android: true
   ios: true
+  
 
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon"
   ios: true
-  image_path: "assets/images/travel_doc_folder.png"
+  image_path: "assets/images/travel_doc_logo.png"
   min_sdk_android: 21
   remove_alpha_ios: true
 
