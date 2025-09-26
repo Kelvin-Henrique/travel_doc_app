@@ -9,9 +9,9 @@ class F {
   static String get apiUrl {
     switch (appFlavor) {
       case Flavor.DEV:
-        return "https://hmapidadostms.ventunolog.com.br/api/";
+        return "https://ec135b3b5f48.ngrok-free.app/";
       case Flavor.PROD:
-        return "https://hmapidadostms.ventunolog.com.br/api/";
+        return "https://ec135b3b5f48.ngrok-free.app/";
     }
   }
 }

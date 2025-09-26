@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:travel_doc_app/app/core/helpers/shared-preferences.dart';
 import 'package:travel_doc_app/app/features/home/page/travel_bottom_navigation_bar.dart';
 import 'package:travel_doc_app/app/features/home/page/viagens.page.dart';
 import 'package:travel_doc_app/app/features/home/page/documentos.page.dart'; // adicione este import
-import 'package:travel_doc_app/app/features/home/page/pessoas.page.dart'; // adicione este import
+import 'package:travel_doc_app/app/features/home/page/pessoas.page.dart';
+import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario.model.dart'; // adicione este import
 
 // O conteúdo deste arquivo foi atualizado para a HomePage,
 // com um layout claro e barra de navegação flutuante.
@@ -24,10 +27,34 @@ class _HomePageState extends State<HomePage> {
   bool _viagensExpanded = true;
   bool _historicoExpanded = false;
 
+  UsuarioModel? _usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsuario();
+  }
+
+  void _loadUsuario() async {
+    final usuario = await SharedPreferencesHelper.getClient();
+    setState(() {
+      _usuario = usuario;
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  String _getInitials(String? nome) {
+    if (nome == null || nome.trim().isEmpty) return '';
+    final parts = nome.trim().split(' ');
+    if (parts.length == 1) {
+      return parts[0].substring(0, 1).toUpperCase();
+    }
+    return (parts[0].substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
 
   void _showProfileMenu(BuildContext context) {
@@ -48,8 +75,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('João Silva', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const Text('joao@email.com', style: TextStyle(color: Colors.black54, fontSize: 13)),
+              Text(_usuario?.nome ?? 'Nome do Usuário', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(_usuario?.email ?? 'Email do Usuário', style: TextStyle(color: Colors.black54, fontSize: 13)),
               const SizedBox(height: 4),
               Row(
                 children: [
@@ -286,7 +313,10 @@ class _HomePageState extends State<HomePage> {
                   child: CircleAvatar(
                     radius: 18,
                     backgroundColor: Colors.grey[200],
-                    child: Text('JS', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      _getInitials(_usuario?.nome),
+                      style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],

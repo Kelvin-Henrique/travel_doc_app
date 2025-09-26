@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario.model.dart';
 
 class SharedPreferencesHelper {
   static final String _cliente = "cliente";
@@ -26,20 +27,25 @@ class SharedPreferencesHelper {
     shared.setString(_cliente, "");
   }
 
-  /* static Future setClient(UsuarioModel usuario) async {
+  static Future setClient(UsuarioModel usuario) async {
     SharedPreferences shared = await SharedPreferences.getInstance();
-    shared.setString(_cliente, jsonEncode(usuario));
+    shared.setString(_cliente, jsonEncode(usuario.toJson()));
   }
 
   static Future<UsuarioModel> getClient() async {
     SharedPreferences shared = await SharedPreferences.getInstance();
-
-    if (shared.getString(_cliente)!.isEmpty) return UsuarioModel();
-
     String? clienteString = shared.getString(_cliente);
-    if (clienteString == null || clienteString.isEmpty) return UsuarioModel();
+    if (clienteString == null || clienteString.isEmpty) {
+      return UsuarioModel(
+        nome: '',
+        cpf: '',
+        email: '',
+        telefone: '',
+        tipo: 0,
+      );
+    }
     return UsuarioModel.fromJson(jsonDecode(clienteString));
-  } */
+  }
 
   static Future setVisibleCaptial(bool visible) async {
     SharedPreferences shared = await SharedPreferences.getInstance();
