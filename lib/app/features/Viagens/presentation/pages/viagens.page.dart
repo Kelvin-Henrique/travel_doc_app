@@ -187,7 +187,7 @@ class _ViagensPageState extends State<ViagensPage> with SingleTickerProviderStat
     );
   }
 
-  void _abrirNovaViagemPage(BuildContext context) {
+  void abrirNovaViagemPage(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NovaViagemPage(
@@ -262,22 +262,23 @@ class _ViagensPageState extends State<ViagensPage> with SingleTickerProviderStat
                 child: TabBarView(
                   controller: _tabController,
                   children: [
+                    // Aba "Viagens Atuais"
                     _carregandoViagens
                         ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            itemCount: (_viagens.isEmpty ? 1 : _viagens.length + 1),
-                            itemBuilder: (context, index) {
-                              if (_viagens.isEmpty || index == _viagens.length) {
+                        : Builder(
+                            builder: (context) {
+                              // Mostre apenas viagens NÃO finalizadas
+                              final viagensAtuais = _viagens.where((viagem) => viagem.status != StatusViagemEnum.finalizada.numero).toList();
+                              if (viagensAtuais.isEmpty) {
                                 return Column(
                                   children: [
-                                    if (_viagens.isEmpty)
-                                      const Padding(
-                                        padding: EdgeInsets.only(top: 32, bottom: 16),
-                                        child: Text(
-                                          'Nenhuma viagem encontrada.',
-                                          style: TextStyle(color: Colors.black54, fontSize: 15),
-                                        ),
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 32, bottom: 16),
+                                      child: Text(
+                                        'Nenhuma viagem encontrada.',
+                                        style: TextStyle(color: Colors.black54, fontSize: 15),
                                       ),
+                                    ),
                                     const SizedBox(height: 16),
                                     Center(
                                       child: ElevatedButton.icon(
@@ -292,49 +293,95 @@ class _ViagensPageState extends State<ViagensPage> with SingleTickerProviderStat
                                         icon: const Icon(Icons.add),
                                         label: const Text('Nova Viagem'),
                                         onPressed: () {
-                                          _abrirNovaViagemPage(context);
+                                          abrirNovaViagemPage(context);
                                         },
                                       ),
                                     ),
                                   ],
                                 );
                               }
-                              final viagem = _viagens[index];
-                              final dataInicio = _formatarData(viagem.dataInicio);
-                              final dataFim = _formatarData(viagem.dataFim);
+                              return ListView.builder(
+                                itemCount: viagensAtuais.length,
+                                itemBuilder: (context, index) {
+                                  final viagem = viagensAtuais[index];
+                                  final dataInicio = _formatarData(viagem.dataInicio);
+                                  final dataFim = _formatarData(viagem.dataFim);
 
-                              String statusDescricao = '';
-                              if (viagem.status != null) {
-                                try {
-                                  final statusEnum = StatusViagemEnum.values.firstWhere(
-                                    (e) => e.numero == viagem.status,
-                                    orElse: () => StatusViagemEnum.planejada,
+                                  String statusDescricao = '';
+                                  if (viagem.status != null) {
+                                    try {
+                                      final statusEnum = StatusViagemEnum.values.firstWhere(
+                                        (e) => e.numero == viagem.status,
+                                        orElse: () => StatusViagemEnum.planejada,
+                                      );
+                                      statusDescricao = statusEnum.descricao;
+                                    } catch (_) {
+                                      statusDescricao = '';
+                                    }
+                                  }
+
+                                  return GestureDetector(
+                                    onTap: () => _abrirDetalheViagemPage(context, viagem),
+                                    child: _buildViagemCard(
+                                      titulo: viagem.nomeViagem ?? '',
+                                      local: viagem.destino,
+                                      periodo: '$dataInicio - $dataFim',
+                                      participantes: _usuario.nome,
+                                      descricao: viagem.descricao ?? '',
+                                      status: statusDescricao,
+                                    ),
                                   );
-                                  statusDescricao = statusEnum.descricao;
-                                } catch (_) {
-                                  statusDescricao = '';
-                                }
-                              }
-
-                              return GestureDetector(
-                                onTap: () => _abrirDetalheViagemPage(context, viagem),
-                                child: _buildViagemCard(
-                                  titulo: viagem.nomeViagem ?? '',
-                                  local: viagem.destino,
-                                  periodo: '$dataInicio - $dataFim',
-                                  participantes: _usuario.nome,
-                                  descricao: viagem.descricao ?? '',
-                                  status: statusDescricao,
-                                ),
+                                },
                               );
                             },
                           ),
-                    Center(
-                      child: Text(
-                        'Nenhuma viagem finalizada.',
-                        style: TextStyle(color: Colors.black54, fontSize: 15),
-                      ),
-                    ),
+                    // Aba "Histórico"
+                    _carregandoViagens
+                        ? const Center(child: CircularProgressIndicator())
+                        : Builder(
+                            builder: (context) {
+                              final historicoViagens = _viagens.where((viagem) => viagem.status == StatusViagemEnum.finalizada.numero).toList();
+                              if (historicoViagens.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    'Nenhuma viagem finalizada.',
+                                    style: TextStyle(color: Colors.black54, fontSize: 15),
+                                  ),
+                                );
+                              }
+                              return ListView.builder(
+                                itemCount: historicoViagens.length,
+                                itemBuilder: (context, index) {
+                                  final viagem = historicoViagens[index];
+                                  final dataInicio = _formatarData(viagem.dataInicio);
+                                  final dataFim = _formatarData(viagem.dataFim);
+                                  String statusDescricao = '';
+                                  if (viagem.status != null) {
+                                    try {
+                                      final statusEnum = StatusViagemEnum.values.firstWhere(
+                                        (e) => e.numero == viagem.status,
+                                        orElse: () => StatusViagemEnum.finalizada,
+                                      );
+                                      statusDescricao = statusEnum.descricao;
+                                    } catch (_) {
+                                      statusDescricao = '';
+                                    }
+                                  }
+                                  return GestureDetector(
+                                    onTap: () => _abrirDetalheViagemPage(context, viagem),
+                                    child: _buildViagemCard(
+                                      titulo: viagem.nomeViagem ?? '',
+                                      local: viagem.destino,
+                                      periodo: '$dataInicio - $dataFim',
+                                      participantes: _usuario.nome,
+                                      descricao: viagem.descricao ?? '',
+                                      status: statusDescricao,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                   ],
                 ),
               ),

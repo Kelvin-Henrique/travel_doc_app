@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:travel_doc_app/app/core/helpers/shared-preferences.dart';
 import 'package:travel_doc_app/app/core/locator/locator.dart';
+import 'package:travel_doc_app/app/features/Viagens/presentation/pages/nova_viagem.page.dart';
 import 'package:travel_doc_app/app/features/home/page/travel_bottom_navigation_bar.dart';
 import 'package:travel_doc_app/app/features/Viagens/presentation/controllers/viagem.controller.dart';
 import 'package:travel_doc_app/app/features/Viagens/presentation/pages/viagens.page.dart';
@@ -9,6 +10,7 @@ import 'package:travel_doc_app/app/features/home/page/pessoas.page.dart';
 import 'package:travel_doc_app/app/features/loader/presentation/pages/loader.view.dart';
 import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario.model.dart';
 import 'package:travel_doc_app/app/features/perfil/page/perfil.page.dart';
+import 'package:travel_doc_app/app/features/Viagens/domain/enums/status_viagem_enum.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -52,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     try {
       final viagens = await _viagemController.obterViagensPorUsuarioIdAsync();
       setState(() {
+        // Mostre todas as viagens, não filtre aqui!
         _viagens = viagens;
       });
     } catch (_) {
@@ -313,6 +316,45 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  int? _diasParaProximaViagem() {
+    final agora = DateTime.now();
+    final hoje = DateTime(agora.year, agora.month, agora.day);
+
+    final viagensFuturas = _viagens.where((v) {
+      if (v.dataInicio == null) return false;
+      try {
+        final data = v.dataInicio is DateTime
+            ? v.dataInicio
+            : DateTime.parse(v.dataInicio.toString());
+        final dataSemHora = DateTime(data.year, data.month, data.day);
+        return !dataSemHora.isBefore(hoje); // inclui hoje e futuras
+      } catch (_) {
+        return false;
+      }
+    }).toList();
+
+    if (viagensFuturas.isEmpty) return null;
+
+    viagensFuturas.sort((a, b) {
+      final dataA = a.dataInicio is DateTime
+          ? a.dataInicio
+          : DateTime.parse(a.dataInicio.toString());
+      final dataB = b.dataInicio is DateTime
+          ? b.dataInicio
+          : DateTime.parse(b.dataInicio.toString());
+      return dataA.compareTo(dataB);
+    });
+
+    final proxima = viagensFuturas.first;
+    final dataProxima = proxima.dataInicio is DateTime
+        ? proxima.dataInicio
+        : DateTime.parse(proxima.dataInicio.toString());
+    final dataProximaSemHora = DateTime(dataProxima.year, dataProxima.month, dataProxima.day);
+
+    // Corrigido: diferença em dias entre hoje e a próxima viagem
+    return dataProximaSemHora.difference(hoje).inDays;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -374,7 +416,8 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
+                  if (_diasParaProximaViagem() != null) ...[
+                    Container(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -392,17 +435,34 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Faltam 8 dias para sua próxima viagem',
-                          style: TextStyle(
-                            color: Color(0xFF0A4DA1),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            final dias = _diasParaProximaViagem();
+                            if (dias == null) {
+                              return const Text(
+                                'Nenhuma viagem futura encontrada',
+                                style: TextStyle(
+                                  color: Color(0xFF0A4DA1),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              );
+                            }
+                            return Text(
+                              'Faltam $dias dia${dias == 1 ? '' : 's'} para sua próxima viagem',
+                              style: const TextStyle(
+                                color: Color(0xFF0A4DA1),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
+                  ],
+                  
                   const SizedBox(height: 18),
                   TextField(
                     decoration: InputDecoration(
@@ -467,46 +527,86 @@ class _HomePageState extends State<HomePage> {
                                 padding: EdgeInsets.symmetric(vertical: 32),
                                 child: Center(child: CircularProgressIndicator()),
                               )
-                            : (_viagens.isEmpty
-                                ? const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 32),
+                            : (() {
+                                // Filtrar apenas viagens planejadas (ativas) para exibir aqui
+                                final proximasViagens = _viagens.where((viagem) => viagem.status == StatusViagemEnum.planejada.numero).toList();
+                                if (proximasViagens.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 32),
                                     child: Center(
-                                      child: Text(
-                                        'Nenhuma viagem encontrada.',
-                                        style: TextStyle(color: Colors.black54, fontSize: 15),
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    height: 260,
-                                    child: Scrollbar(
-                                      thumbVisibility: true,
-                                      controller: _viagemScrollController,
-                                      child: ListView.builder(
-                                        controller: _viagemScrollController,
-                                        itemCount: _viagens.length,
-                                        itemBuilder: (context, index) {
-                                          final viagem = _viagens[index];
-                                          final dataInicio = _formatarData(viagem.dataInicio);
-                                          final dataFim = _formatarData(viagem.dataFim);
-                                          return Container(
-                                            margin: const EdgeInsets.only(bottom: 12),
-                                            child: _buildViagemCard(
-                                              local: viagem.destino ?? '',
-                                              tipo: viagem.nomeViagem ?? '',
-                                              tags: ['Criada por mim'],
-                                              periodo: '$dataInicio - $dataFim',
-                                              participantes: '1 participante',
-                                              documentos: '0 documento(s)',
-                                              descricao: viagem.descricao ?? '',
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.airplanemode_inactive, size: 48, color: Colors.blueGrey[300]),
+                                          const SizedBox(height: 16),
+                                          const Text(
+                                            'Nenhuma viagem próxima',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.black87,
                                             ),
-                                          );
-                                        },
+                                          ),
+                                          const SizedBox(height: 8),
+                                          const Text(
+                                            'Comece criando sua primeira viagem',
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 18),
+                                          ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(0xFF0A4DA1),
+                                              foregroundColor: Colors.white,
+                                              minimumSize: const Size(180, 44),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            icon: const Icon(Icons.add, color:  Colors.white),
+                                            label: const Text('Criar próxima viagem'),
+                                            onPressed: () {
+                                              ViagensPage.globalKey.currentState?.abrirNovaViagemPage(context);
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  )),
+                                  );
+                                }
+                                return Container(
+                                  height: 260,
+                                  child: Scrollbar(
+                                    thumbVisibility: true,
+                                    controller: _viagemScrollController,
+                                    child: ListView.builder(
+                                      controller: _viagemScrollController,
+                                      itemCount: proximasViagens.length,
+                                      itemBuilder: (context, index) {
+                                        final viagem = proximasViagens[index];
+                                        final dataInicio = _formatarData(viagem.dataInicio);
+                                        final dataFim = _formatarData(viagem.dataFim);
+                                        return Container(
+                                          margin: const EdgeInsets.only(bottom: 12),
+                                          child: _buildViagemCard(
+                                            local: viagem.destino ?? '',
+                                            tipo: viagem.nomeViagem ?? '',
+                                            tags: ['Criada por mim'],
+                                            periodo: '$dataInicio - $dataFim',
+                                            participantes: '1 participante',
+                                            documentos: '0 documento(s)',
+                                            descricao: viagem.descricao ?? '',
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              })(),
                         const SizedBox(height: 6),
-                        if (!_carregandoViagens)
+                        if (!_carregandoViagens && _viagens.where((viagem) => viagem.status == StatusViagemEnum.planejada.numero).isNotEmpty)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
@@ -555,18 +655,36 @@ class _HomePageState extends State<HomePage> {
                           child: Scrollbar(
                             thumbVisibility: true,
                             controller: _historicoScrollController,
-                            child: ListView(
-                              controller: _historicoScrollController,
-                              children: [
-                                _buildHistoricoCard(
-                                  local: 'Brasil - São Paulo',
-                                  tipo: 'Reunião de trabalho',
-                                  tags: ['Criada por mim', 'Concluída'],
-                                  periodo: '28/02/2023 - 04/03/2023',
-                                  participantes: '1 participante(s) (João Silva)',
-                                  documentos: '2 documento(s)',
-                                ),
-                              ],
+                            child: Builder(
+                              builder: (context) {
+                                // Filtre aqui apenas as finalizadas
+                                final historicoViagens = _viagens.where((viagem) => viagem.status == StatusViagemEnum.finalizada.numero).toList();
+                                if (historicoViagens.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      'Nenhuma viagem finalizada.',
+                                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                                    ),
+                                  );
+                                }
+                                return ListView.builder(
+                                  controller: _historicoScrollController,
+                                  itemCount: historicoViagens.length,
+                                  itemBuilder: (context, index) {
+                                    final viagem = historicoViagens[index];
+                                    final dataInicio = _formatarData(viagem.dataInicio);
+                                    final dataFim = _formatarData(viagem.dataFim);
+                                    return _buildHistoricoCard(
+                                      local: viagem.destino ?? '',
+                                      tipo: viagem.nomeViagem ?? '',
+                                      tags: ['Criada por mim', 'Concluída'],
+                                      periodo: '$dataInicio - $dataFim',
+                                      participantes: '1 participante(s) (${_usuario?.nome ?? ''})',
+                                      documentos: '0 documento(s)',
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -574,7 +692,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  /* const Text(
                     'Ofertas de Parceiros',
                     style: TextStyle(
                       color: Colors.black54,
@@ -598,7 +716,7 @@ class _HomePageState extends State<HomePage> {
                     preco: 'A partir de R\$ 299',
                     cor: Colors.lightBlue,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 32), */
                 ],
               ),
             ),
