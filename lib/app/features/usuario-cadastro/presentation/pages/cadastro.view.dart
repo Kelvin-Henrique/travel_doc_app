@@ -22,6 +22,7 @@ class _CadastroViewState extends State<CadastroView> {
   bool _senhaVisivel = false;
 
   final _cadastroUsuarioController = locator<UsuarioCadastroController>();
+  
 
   bool _todosPreenchidos = false;
   bool _carregando = false;

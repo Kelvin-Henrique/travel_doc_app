@@ -9,9 +9,9 @@ class F {
   static String get apiUrl {
     switch (appFlavor) {
       case Flavor.DEV:
-        return "https://ec135b3b5f48.ngrok-free.app/";
+        return "https://41bcf454935e.ngrok-free.app/";
       case Flavor.PROD:
-        return "https://ec135b3b5f48.ngrok-free.app/";
+        return "https://41bcf454935e.ngrok-free.app/";
     }
   }
 }

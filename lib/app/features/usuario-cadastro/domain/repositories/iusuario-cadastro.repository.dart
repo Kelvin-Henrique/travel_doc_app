@@ -5,4 +5,5 @@ import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario
 abstract class IUsuarioCadastroRepository {
 Future<Either<Failure, void>> cadastrarUsuarioAsync(
       UsuarioCadastroRequest dadosCadastro);
+      Future<Either<Failure, void>> atualizarUsuarioAsync(UsuarioCadastroRequest dadosAtualizacao);
 }

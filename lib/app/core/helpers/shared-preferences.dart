@@ -37,6 +37,7 @@ class SharedPreferencesHelper {
     String? clienteString = shared.getString(_cliente);
     if (clienteString == null || clienteString.isEmpty) {
       return UsuarioModel(
+        id: 0,
         nome: '',
         cpf: '',
         email: '',
@@ -65,5 +66,10 @@ class SharedPreferencesHelper {
   static Future<String?> getClienteIndicacaoId() async {
     SharedPreferences shared = await SharedPreferences.getInstance();
     return shared.getString("clienteIndicacaoId");
+  }
+
+  static Future<void> removeClient() async {
+    SharedPreferences shared = await SharedPreferences.getInstance();
+    await shared.remove(_cliente);
   }
 }

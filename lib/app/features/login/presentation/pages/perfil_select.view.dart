@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_doc_app/app/features/home/page/home.page.dart';
+import 'package:travel_doc_app/app/features/loader/presentation/pages/loader.view.dart';
 
 class PerfilSelectView extends StatefulWidget {
   const PerfilSelectView({super.key});
@@ -9,13 +10,14 @@ class PerfilSelectView extends StatefulWidget {
 }
 
 class _PerfilSelectViewState extends State<PerfilSelectView> {
-  int? _selectedPerfil; // 0 = Viajante, 1 = Agência
+  int? _selectedPerfil;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
+    return Loader(
+      child: Scaffold(
       backgroundColor: const Color(0xEAF2FBFF),
       body: Center(
         child: Container(
@@ -35,7 +37,6 @@ class _PerfilSelectViewState extends State<PerfilSelectView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo azul com ícones
               Image.asset(
                 'assets/images/travel_doc_logo.png',
                 width: 200,
@@ -59,8 +60,6 @@ class _PerfilSelectViewState extends State<PerfilSelectView> {
                 ),
               ),
               const SizedBox(height: 28),
-
-              // Opção Viajante
               InkWell(
                 onTap: () => setState(() => _selectedPerfil = 0),
                 child: Container(
@@ -110,8 +109,6 @@ class _PerfilSelectViewState extends State<PerfilSelectView> {
                   ),
                 ),
               ),
-
-              // Opção Agência de Turismo
               InkWell(
                 onTap: () => setState(() => _selectedPerfil = 1),
                 child: Container(
@@ -161,8 +158,6 @@ class _PerfilSelectViewState extends State<PerfilSelectView> {
                 ),
               ),
               const SizedBox(height: 28),
-
-              // Botão Continuar
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -196,6 +191,6 @@ class _PerfilSelectViewState extends State<PerfilSelectView> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

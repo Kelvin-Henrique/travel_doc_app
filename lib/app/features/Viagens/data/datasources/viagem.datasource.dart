@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:travel_doc_app/app/core/helpers/shared-preferences.dart';
 import 'package:travel_doc_app/app/features/Viagens/data/datasources/iviagem.datasource.dart';
 import 'package:travel_doc_app/app/features/Viagens/data/models/cadastro-viagem.request.dart';
+import 'package:travel_doc_app/app/features/Viagens/data/models/viagens.model.dart';
 
 
 @Injectable(as: IViagemDatasource, order: -1)
@@ -17,6 +19,21 @@ class ViagemDatasource extends IViagemDatasource {
       return;
     } else {
       throw Exception('Erro ao cadastrar viagem');
+    }
+  }
+
+  @override
+  Future<List<ViagensModel>> obterViagemPorUsuarioIdAsync() async {
+    var cliente = await SharedPreferencesHelper.getClient();
+    final response = await dio.get('/viagens/usuario/${cliente.id}');
+    
+    if (response.statusCode == 200) {
+      final lista = (response.data as List)
+          .map((json) => ViagensModel.fromJson(json))
+          .toList();
+      return lista;
+    } else {
+      throw Exception('Erro ao buscar viagens');
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:travel_doc_app/app/core/platform/network-info/network-info.dart'
 import 'package:travel_doc_app/app/core/services/dialog.service.dart';
 import 'package:travel_doc_app/app/core/services/erro.service.dart';
 import 'package:travel_doc_app/app/features/loader/usecases/loader.controller.dart';
+import 'package:travel_doc_app/app/features/pais/presentation/controllers/pais.controller.dart';
 
 import 'locator.config.dart';
 
@@ -22,5 +23,6 @@ void setupDependencies() {
   locator.registerLazySingleton(() => InterceptorRequest(Dio()).dio);
   locator.registerLazySingleton(() => LoaderController());
   locator.registerLazySingleton<INetworkInfo>(() => NetworkInfo());
+  locator.registerLazySingleton(() => PaisController());
   locator.init();
 }

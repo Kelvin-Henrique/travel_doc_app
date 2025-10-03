@@ -15,10 +15,19 @@ class UsuarioCadastroRepository extends BaseRepository
   {required this.datasource, required super.networkInfo});
 
   
+  @override
   Future<Either<Failure, void>> cadastrarUsuarioAsync(
       UsuarioCadastroRequest dadosCadastro) async {
     return executeSafely(() async {
       var result = await datasource.cadastrarUsuarioAsync(dadosCadastro);
+      return result;
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> atualizarUsuarioAsync(UsuarioCadastroRequest dadosAtualizacao) async {
+    return executeSafely(() async {
+      var result = await datasource.atualizarUsuarioAsync(dadosAtualizacao);
       return result;
     });
   }

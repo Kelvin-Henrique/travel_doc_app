@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class UsuarioEntity extends Equatable {
+  final int? id;
   final String cpf;
   final String nome;
   final String email;
@@ -8,6 +9,7 @@ class UsuarioEntity extends Equatable {
   final int? tipo; 
 
   const UsuarioEntity({
+    this.id,
     required this.cpf,
     required this.nome,
     required this.email,
@@ -16,5 +18,5 @@ class UsuarioEntity extends Equatable {
   });
 
   @override
-  List<Object> get props => [cpf, nome, email, telefone, tipo ?? 0];
+  List<Object> get props => [id ?? 0, cpf, nome, email, telefone, tipo ?? 0];
 }

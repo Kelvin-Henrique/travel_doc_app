@@ -20,4 +20,14 @@ class UsuarioCadastroDatasource extends IUsuarioCadastroDatasource {
     }
   }
 
+  @override
+  Future atualizarUsuarioAsync(UsuarioCadastroRequest dadosAtualizacao) async {
+    final response = await dio.post('/usuarios', data: dadosAtualizacao.toJson());
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw Exception('Erro ao atualizar usuário');
+    }
+  }
+
 }

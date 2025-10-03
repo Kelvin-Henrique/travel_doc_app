@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_doc_app/app/core/helpers/shared-preferences.dart';
+import 'package:travel_doc_app/app/core/locator/locator.dart';
 import 'package:travel_doc_app/app/features/home/page/travel_bottom_navigation_bar.dart';
-import 'package:travel_doc_app/app/features/home/page/viagens.page.dart';
-import 'package:travel_doc_app/app/features/home/page/documentos.page.dart'; // adicione este import
+import 'package:travel_doc_app/app/features/Viagens/presentation/controllers/viagem.controller.dart';
+import 'package:travel_doc_app/app/features/Viagens/presentation/pages/viagens.page.dart';
+import 'package:travel_doc_app/app/features/home/page/documentos.page.dart';
 import 'package:travel_doc_app/app/features/home/page/pessoas.page.dart';
-import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario.model.dart'; // adicione este import
-
-// O conteúdo deste arquivo foi atualizado para a HomePage,
-// com um layout claro e barra de navegação flutuante.
+import 'package:travel_doc_app/app/features/loader/presentation/pages/loader.view.dart';
+import 'package:travel_doc_app/app/features/usuario-cadastro/data/models/usuario.model.dart';
+import 'package:travel_doc_app/app/features/perfil/page/perfil.page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,16 +23,19 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _viagemScrollController = ScrollController();
   final ScrollController _historicoScrollController = ScrollController();
 
-  // Estados para expandir/recolher
   bool _viagensExpanded = true;
   bool _historicoExpanded = false;
 
   UsuarioModel? _usuario;
+  final _viagemController = locator<ViagemController>();
+  List _viagens = [];
+  bool _carregandoViagens = false;
 
   @override
   void initState() {
     super.initState();
     _loadUsuario();
+    _carregarViagensHome();
   }
 
   void _loadUsuario() async {
@@ -42,9 +45,37 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _carregarViagensHome() async {
+    setState(() {
+      _carregandoViagens = true;
+    });
+    try {
+      final viagens = await _viagemController.obterViagensPorUsuarioIdAsync();
+      setState(() {
+        _viagens = viagens;
+      });
+    } catch (_) {
+    } finally {
+      setState(() {
+        _carregandoViagens = false;
+      });
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedIndex = 0;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _selectedIndex = index;
+        if (index == 0) {
+          _carregarViagensHome();
+        }
+        if (index == 1) {
+          ViagensPage.globalKey.currentState?.recarregarViagens();
+        }
+      });
     });
   }
 
@@ -75,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_usuario?.nome ?? 'Nome do Usuário', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(_usuario?.nome ?? 'Nome do Usuário', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
               Text(_usuario?.email ?? 'Email do Usuário', style: TextStyle(color: Colors.black54, fontSize: 13)),
               const SizedBox(height: 4),
               Row(
@@ -103,21 +134,23 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.settings, size: 20, color: Colors.black54),
-                title: const Text('Perfil', style: TextStyle(fontSize: 14)),
+                leading: const Icon(Icons.settings, size: 20, color: Colors.black),
+                title: const Text('Perfil', style: TextStyle(fontSize: 14, color: Colors.black)),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navegar para página de perfil
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => PerfilPage(usuario: _usuario)),
+                  );
                 },
               ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.credit_card, size: 20, color: Colors.black54),
-                title: const Text('Planos', style: TextStyle(fontSize: 14)),
+                leading: const Icon(Icons.credit_card, size: 20, color: Colors.black),
+                title: const Text('Planos', style: TextStyle(fontSize: 14, color: Colors.black)),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navegar para página de planos
                 },
               ),
               ListTile(
@@ -127,7 +160,6 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Sair', style: TextStyle(fontSize: 14)),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Implementar logout
                 },
               ),
             ],
@@ -220,7 +252,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: Implementar seleção de arquivo
                             },
                             child: const Text('Escolher arquivo'),
                           ),
@@ -248,7 +279,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
-                              // TODO: Salvar documento
                               Navigator.of(context).pop();
                             }
                           },
@@ -273,11 +303,22 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  String _formatarData(dynamic data) {
+    if (data == null) return '';
+    try {
+      final date = data is DateTime ? data : DateTime.parse(data.toString());
+      return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
+    return Loader(
+      child: Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
@@ -327,14 +368,12 @@ class _HomePageState extends State<HomePage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          // Página Home
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Barra de progresso próxima viagem
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
@@ -365,8 +404,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 18),
-
-                  // Campo de busca
                   TextField(
                     decoration: InputDecoration(
                       hintText: 'Buscar viagens...',
@@ -397,8 +434,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 18),
-
-                  // Próximas Viagens ExpansionTile
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -427,62 +462,70 @@ class _HomePageState extends State<HomePage> {
                         color: Color(0xFF0A4DA1),
                       ),
                       children: [
-                        // Indicador de rolagem
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
-                            SizedBox(width: 4),
-                            Text(
-                              'Arraste para ver mais',
-                              style: TextStyle(
-                                color: Colors.black38,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+                        _carregandoViagens
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 32),
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            : (_viagens.isEmpty
+                                ? const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 32),
+                                    child: Center(
+                                      child: Text(
+                                        'Nenhuma viagem encontrada.',
+                                        style: TextStyle(color: Colors.black54, fontSize: 15),
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    height: 260,
+                                    child: Scrollbar(
+                                      thumbVisibility: true,
+                                      controller: _viagemScrollController,
+                                      child: ListView.builder(
+                                        controller: _viagemScrollController,
+                                        itemCount: _viagens.length,
+                                        itemBuilder: (context, index) {
+                                          final viagem = _viagens[index];
+                                          final dataInicio = _formatarData(viagem.dataInicio);
+                                          final dataFim = _formatarData(viagem.dataFim);
+                                          return Container(
+                                            margin: const EdgeInsets.only(bottom: 12),
+                                            child: _buildViagemCard(
+                                              local: viagem.destino ?? '',
+                                              tipo: viagem.nomeViagem ?? '',
+                                              tags: ['Criada por mim'],
+                                              periodo: '$dataInicio - $dataFim',
+                                              participantes: '1 participante',
+                                              documentos: '0 documento(s)',
+                                              descricao: viagem.descricao ?? '',
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  )),
                         const SizedBox(height: 6),
-                        Container(
-                          height: 260,
-                          child: Scrollbar(
-                            thumbVisibility: true,
-                            controller: _viagemScrollController,
-                            child: ListView(
-                              controller: _viagemScrollController,
-                              scrollDirection: Axis.vertical,
-                              children: [
-                                _buildViagemCard(
-                                  local: 'Portugal - Lisboa',
-                                  tipo: 'Viagem de negócios',
-                                  tags: ['Criada por mim', 'Viagem próxima'],
-                                  periodo: '29/08/2025 - 04/09/2025',
-                                  participantes: '1 participante(s) (João Silva)',
-                                  documentos: '0 documento(s)',
-                                  descricao: 'Conferência internacional',
+                        if (!_carregandoViagens)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.keyboard_arrow_down, color: Colors.black38, size: 22),
+                              SizedBox(width: 4),
+                              Text(
+                                'Arraste para ver mais',
+                                style: TextStyle(
+                                  color: Colors.black38,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                const SizedBox(height: 16),
-                                _buildViagemCard(
-                                  local: 'França - Paris',
-                                  tipo: 'Lua de mel',
-                                  tags: ['Criada por mim'],
-                                  periodo: '14/09/2025 - 21/09/2025',
-                                  participantes: '2 participante(s) (João Silva, Maria Santos)',
-                                  documentos: '1 documento(s)',
-                                  descricao: 'Lua de mel em Paris',
-                                ),
-                                // Adicione mais cards conforme necessário
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Histórico de Viagens ExpansionTile
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -523,7 +566,6 @@ class _HomePageState extends State<HomePage> {
                                   participantes: '1 participante(s) (João Silva)',
                                   documentos: '2 documento(s)',
                                 ),
-                                // Adicione mais cards conforme necessário
                               ],
                             ),
                           ),
@@ -532,8 +574,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Ofertas de parceiros
                   const Text(
                     'Ofertas de Parceiros',
                     style: TextStyle(
@@ -563,13 +603,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          // Página Viagens
-          const ViagensPage(),
-          // Item do meio (Camera) - pode ser vazio ou uma tela de câmera
+          ViagensPage(key: ViagensPage.globalKey),
           Container(),
-          // Documentos (pode ser implementado depois)
           const DocumentosPage(),
-          // Pessoas (pode ser implementado depois)
           const PessoasPage(),
         ],
       ),
@@ -583,7 +619,7 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-    );
+    ));
   }
 
   Widget _buildViagemCard({
@@ -705,7 +741,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Adicione este método para o card do histórico
   Widget _buildHistoricoCard({
     required String local,
     required String tipo,
@@ -810,7 +845,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         image: DecorationImage(
-          image: AssetImage('assets/images/oferta_bg.jpg'), // Imagem genérica, troque se quiser
+          image: AssetImage('assets/images/oferta_bg.jpg'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.15), BlendMode.darken),
         ),

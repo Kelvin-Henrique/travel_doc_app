@@ -19,6 +19,16 @@ mixin _$UsuarioCadastroController on _UsuarioCadastroControllerBase, Store {
         .run(() => super.cadastrarUsuarioAsync(dadosCadastros));
   }
 
+  late final _$atualizarCadastroAsyncAsyncAction = AsyncAction(
+      '_UsuarioCadastroControllerBase.atualizarCadastroAsync',
+      context: context);
+
+  @override
+  Future<void> atualizarCadastroAsync(UsuarioCadastroRequest dadosCadastros) {
+    return _$atualizarCadastroAsyncAsyncAction
+        .run(() => super.atualizarCadastroAsync(dadosCadastros));
+  }
+
   @override
   String toString() {
     return '''
