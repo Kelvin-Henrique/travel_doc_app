@@ -37,4 +37,13 @@ class ViagemDatasource extends IViagemDatasource {
     }
   }
 
+  @override
+  Future convidarParticipanteAsync(String email, int viagemId) async {
+    final response = await dio.post('/viagens/participantes', data: {'emailConvidado': email, 'viagemId': viagemId});
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return;
+    } else {
+      throw Exception('Erro ao convidar participante');
+    }
+  }
 }

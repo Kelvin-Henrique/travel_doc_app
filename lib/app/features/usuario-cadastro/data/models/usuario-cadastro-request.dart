@@ -1,5 +1,7 @@
+import 'dart:ffi';
+
 class UsuarioCadastroRequest {
-  final String? id;
+  final int? id;
   final String cpf;
   final String nome;
   final String email;

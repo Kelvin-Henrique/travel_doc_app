@@ -427,34 +427,55 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        LinearProgressIndicator(
-                          value: 0.7,
-                          minHeight: 7,
-                          backgroundColor: Colors.grey[300],
-                          color: const Color(0xFF0A4DA1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                        // LinearProgressIndicator(
+                        //   value: 0.7,
+                        //   minHeight: 7,
+                        //   backgroundColor: Colors.grey[300],
+                        //   color: const Color(0xFF0A4DA1),
+                        //   borderRadius: BorderRadius.circular(4),
+                        // ),
                         const SizedBox(height: 8),
+                        // Substitua o valor fixo por um valor proporcional aos dias restantes
                         Builder(
                           builder: (context) {
                             final dias = _diasParaProximaViagem();
-                            if (dias == null) {
-                              return const Text(
-                                'Nenhuma viagem futura encontrada',
-                                style: TextStyle(
-                                  color: Color(0xFF0A4DA1),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                              );
+                            // Defina um máximo de dias para o progresso (exemplo: 30 dias)
+                            const int maxDias = 30;
+                            double progress = 0.0;
+                            if (dias != null) {
+                              progress = 1.0 - (dias / maxDias);
+                              if (progress < 0) progress = 0;
+                              if (progress > 1) progress = 1;
                             }
-                            return Text(
-                              'Faltam $dias dia${dias == 1 ? '' : 's'} para sua próxima viagem',
-                              style: const TextStyle(
-                                color: Color(0xFF0A4DA1),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                              ),
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LinearProgressIndicator(
+                                  value: progress,
+                                  minHeight: 7,
+                                  backgroundColor: Colors.grey[300],
+                                  color: const Color(0xFF0A4DA1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                const SizedBox(height: 8),
+                                dias == null
+                                    ? const Text(
+                                        'Nenhuma viagem futura encontrada',
+                                        style: TextStyle(
+                                          color: Color(0xFF0A4DA1),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Faltam $dias dia${dias == 1 ? '' : 's'} para sua próxima viagem',
+                                        style: const TextStyle(
+                                          color: Color(0xFF0A4DA1),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                              ],
                             );
                           },
                         ),

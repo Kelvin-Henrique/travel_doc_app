@@ -49,6 +49,8 @@ import 'package:travel_doc_app/app/features/Viagens/domain/repositories/iviagem.
     as _i701;
 import 'package:travel_doc_app/app/features/Viagens/domain/usecases/cadastrar-viagem.usecase.dart'
     as _i346;
+import 'package:travel_doc_app/app/features/Viagens/domain/usecases/convidar-participante.usecase.dart'
+    as _i347;
 import 'package:travel_doc_app/app/features/Viagens/domain/usecases/obter-viagens.usecase.dart'
     as _i837;
 import 'package:travel_doc_app/app/features/Viagens/presentation/controllers/viagem.controller.dart'
@@ -92,6 +94,9 @@ extension GetItInjectableX on _i174.GetIt {
             repository: gh<_i176.IUsuarioCadastroRepository>()));
     gh.singleton<_i346.CadastrarViagemUsecase>(() =>
         _i346.CadastrarViagemUsecase(
+            repository: gh<_i701.IViagemRepository>()));
+    gh.singleton<_i347.ConvidarParticipanteUsecase>(() =>
+        _i347.ConvidarParticipanteUsecase(
             repository: gh<_i701.IViagemRepository>()));
     gh.singleton<_i837.ObterViagensUseCase>(() =>
         _i837.ObterViagensUseCase(repository: gh<_i701.IViagemRepository>()));

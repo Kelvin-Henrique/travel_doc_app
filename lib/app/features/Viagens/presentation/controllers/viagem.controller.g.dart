@@ -29,6 +29,16 @@ mixin _$ViagemController on _ViagemControllerBase, Store {
         .run(() => super.obterViagensPorUsuarioIdAsync());
   }
 
+  late final _$convidarParticipanteAsyncAsyncAction = AsyncAction(
+      '_ViagemControllerBase.convidarParticipanteAsync',
+      context: context);
+
+  @override
+  Future<void> convidarParticipanteAsync(String email, int viagemId) {
+    return _$convidarParticipanteAsyncAsyncAction
+        .run(() => super.convidarParticipanteAsync(email, viagemId));
+  }
+
   @override
   String toString() {
     return '''

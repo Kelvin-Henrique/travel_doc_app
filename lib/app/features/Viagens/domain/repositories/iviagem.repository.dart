@@ -7,4 +7,6 @@ abstract class IViagemRepository {
 Future<Either<Failure, void>> cadastrarViagemAsync(
       CadastroViagemRequest dadosViagem);
       Future<Either<Failure, List<ViagensEntity>>> obterViagensPorUsuarioIdAsync();
+      Future<Either<Failure, void>> convidarParticipanteAsync(
+      String email, int viagemId);
 }

@@ -203,7 +203,7 @@ class _PerfilPageState extends State<PerfilPage> {
                           onPressed: _todosPreenchidos
                               ? () async {
                                   var dadosAtualizacao = UsuarioCadastroRequest(
-                                    id: widget.usuario?.id.toString() ?? '',
+                                    id: widget.usuario?.id,
                                     nome: widget.usuario?.nome ?? '',
                                     email: widget.usuario?.email ?? '',
                                     telefone: toNumericString(_telefoneController.text),

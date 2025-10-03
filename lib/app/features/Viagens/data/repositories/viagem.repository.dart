@@ -33,4 +33,12 @@ class ViagemRepository extends BaseRepository
     });
   }
   
+  @override
+  Future<Either<Failure, void>> convidarParticipanteAsync(
+      String email, int viagemId) async {
+    return executeSafely(() async {
+      var result = await datasource.convidarParticipanteAsync(email, viagemId);
+      return result;
+    });
+  }
 }

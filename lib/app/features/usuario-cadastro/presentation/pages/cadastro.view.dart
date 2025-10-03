@@ -316,6 +316,7 @@ class _CadastroViewState extends State<CadastroView> {
                               telefone: toNumericString(_telefoneController.text),
                               cpf: toNumericString(_cpfController.text),
                               tipo: 1,
+                              id: 0,
                             );
                             try {
                               await _cadastroUsuarioController.cadastrarUsuarioAsync(request);
